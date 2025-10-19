@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Search, User, LogOut, Menu, X, Moon, Sun } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext'; // Context for user data
 
 export function Header() {
-  const { user, profile, signOut } = useAuth();
+  // Get loading state, but we won't use it for early return anymore
+  const { user, profile, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,7 +17,7 @@ export function Header() {
   });
 
   React.useEffect(() => {
-    const root = window.document.documentElement;
+   const root = window.document.documentElement;
     if (theme === 'dark') {
       root.classList.add('dark');
     } else {
@@ -30,7 +31,7 @@ export function Header() {
   };
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+   e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/books?search=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
@@ -43,6 +44,13 @@ export function Header() {
     setIsMenuOpen(false);
   };
 
+  // Keep the log for debugging if needed
+  console.log('Header rendering - loading:', loading, 'user:', user, 'profile:', profile);
+
+  // --- LOADING CHECK REMOVED ---
+  // No more `if (loading) { return ... }` block here.
+
+  // --- Render the full header directly ---
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +89,8 @@ export function Header() {
             >
               Browse Books
             </Link>
-            
+
+            {/* Rely directly on 'user' state */}
             {user ? (
               <div className="flex items-center space-x-4">
                 <Link
@@ -89,6 +98,7 @@ export function Header() {
                   className="flex items-center space-x-2 text-gray-700 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
                   <User className="h-4 w-4" />
+                  {/* Display profile name if available, otherwise fallback */}
                   <span>{profile?.full_name || 'Profile'}</span>
                 </Link>
                 <button
@@ -115,6 +125,7 @@ export function Header() {
                 </Link>
               </div>
             )}
+             {/* Theme toggle button */}
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -150,7 +161,7 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 dark:bg-gray-900 dark:border-gray-800">
           <div className="px-4 py-2 space-y-2">
@@ -161,8 +172,8 @@ export function Header() {
             >
               Browse Books
             </Link>
-            
-            {user ? (
+
+            {user ? ( // Mobile menu check
               <>
                 <Link
                   to="/profile"
@@ -178,7 +189,7 @@ export function Header() {
                   Sign Out
                 </button>
               </>
-            ) : (
+            ) : ( // Mobile menu Sign In/Up
               <>
                 <Link
                   to="/signin"
